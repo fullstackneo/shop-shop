@@ -35,6 +35,8 @@ const StoreProvider = ({ value = [], ...props }) => {
 // 在一个组件中执行useStoreContext(),即可获取[state, dispatch] 最新状态或者更新状态
 
 // we can use our useStoreContext() function to grab the state from the <StoreProvider> component and use the returning dispatch method to update it
+
+// our own hook
 const useStoreContext = () => {
   return useContext(StoreContext);
 };
