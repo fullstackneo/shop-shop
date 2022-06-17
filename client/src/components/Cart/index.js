@@ -2,12 +2,27 @@ import React, { useEffect } from 'react';
 import CartItem from '../CartItem';
 import Auth from '../../utils/auth';
 import { useStoreContext } from '../../utils/GlobalState';
-
+import { useLazyQuery } from '@apollo/client';
 import { TOGGLE_CART, ADD_MULTIPLE_TO_CART } from '../../utils/actions';
 import { idbPromise } from '../../utils/helpers';
+import { QUERY_CHECKOUT } from '../../utils/queries';
+import { loadStripe } from '@stripe/stripe-js';
 import './style.css';
 
 const Cart = () => {
+  const stripePromise = loadStripe('pk_test_TYooMQauvdEDq54NiTphI7jx');
+  const [getCheckout, { data }] = useLazyQuery(QUERY_CHECKOUT);
+
+  // data 一有数据 就进行跳转
+  // We'll use the stripePromise object to redirect to Stripe once the data variable has data in it.
+  useEffect(() => {
+    if (data) {
+      stripePromise.then(res => {
+        res.redirectToCheckout({ sessionId: data.checkout.session });
+      });
+    }
+  }, [data]);
+
   const [state, dispatch] = useStoreContext();
   function toggleCart() {
     dispatch({ type: TOGGLE_CART });
@@ -19,6 +34,20 @@ const Cart = () => {
       sum += item.price * item.purchaseQuantity;
     });
     return sum.toFixed(2);
+  }
+
+  function submitCheckout() {
+    const productIds = [];
+
+    state.cart.forEach(item => {
+      for (let i = 0; i < item.purchaseQuantity; i++) {
+        productIds.push(item._id);
+      }
+    });
+
+    getCheckout({
+      variables: { products: productIds },
+    });
   }
 
   useEffect(() => {
@@ -78,6 +107,7 @@ const Cart = () => {
           You haven't added anything to your cart yet!
         </h3>
       )}
+      <button onClick={submitCheckout}>Checkout</button>
     </div>
   );
 };
