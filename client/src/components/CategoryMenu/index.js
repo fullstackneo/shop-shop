@@ -6,6 +6,7 @@ import {
 import { useQuery } from '@apollo/client';
 import { QUERY_CATEGORIES } from '../../utils/queries';
 import { useStoreContext } from '../../utils/GlobalState';
+import { idbPromise } from '../../utils/helpers';
 
 function CategoryMenu() {
   //  Currently, we have it set up to use the useQuery() Hook from Apollo to retrieve all of our category data and use it for the UI. This works great, but because we want to add offline capabilities later, this may become more difficult.
@@ -16,7 +17,7 @@ function CategoryMenu() {
   const { categories } = state;
 
   //  How can we do that if useQuery() is an asynchronous function? We can't simply just add the dispatch() method below it, as categoryData won't exist on load!
-  const { data: categoryData } = useQuery(QUERY_CATEGORIES);
+  const { loading, data: categoryData } = useQuery(QUERY_CATEGORIES);
 
   useEffect(() => {
     // if categoryData exists or has changed from the response of useQuery, then run dispatch()
@@ -26,8 +27,18 @@ function CategoryMenu() {
         type: UPDATE_CATEGORIES,
         categories: categoryData.categories,
       });
+      categoryData.categories.forEach(category => {
+        idbPromise('categories', 'put', category);
+      });
+    } else if (!loading) {
+      idbPromise('categories', 'get').then(categories => {
+        dispatch({
+          type: UPDATE_CATEGORIES,
+          categories: categories,
+        });
+      });
     }
-  }, [categoryData, dispatch]);
+  }, [categoryData, loading, dispatch]);
 
   // to update the click handler to update our global state instead of using the function we receive as a prop from the Home component.
   const handleClick = id => {
