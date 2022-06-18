@@ -21,23 +21,23 @@ function Success() {
       console.log(products);
 
       try {
-        // save the products order to DB
-        await addOrder({
-          variables: {
-            products,
-          },
-        });
-        // console.log(res);
-
         //无需清除全局中的cart，因为全局状态中cart根据indexedDB来更新
         // await dispatch({
         //   type: 'CLEAR_CART',
         // });
 
         // 清除indexedDB中cart数据
-        cart.forEach(item => idbPromise('cart', 'delete', item));
-
-        console.log('clean idb cart');
+        // 此处防止客户直接点击/success页面，此时products.length为0。没有if，会直接清空idb
+        if (products.length) {
+          // save the products order to DB
+          await addOrder({
+            variables: {
+              products,
+            },
+          });
+          cart.forEach(item => idbPromise('cart', 'delete', item));
+          console.log('clean idb cart');
+        }
       } catch (error) {
         console.log(error);
       }
@@ -47,7 +47,7 @@ function Success() {
     //wait for 3 second and jump to home page
     setTimeout(() => {
       window.location.assign('/');
-    }, 30000);
+    }, 3000);
   }, [addOrder]);
 
   return (
