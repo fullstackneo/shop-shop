@@ -33,6 +33,22 @@ const initialState = {
   cartOpen: false,
 };
 
+test('UPDATE_CART_QUANTITY', () => {
+  let newState = reducer(initialState, {
+    type: UPDATE_CART_QUANTITY,
+    _id: '1',
+    purchaseQuantity: 3,
+  });
+  expect(initialState.cart.length).toBe(2);
+  expect(initialState.cart[0].purchaseQuantity).toBe(1);
+
+  expect(newState.cartOpen).toBe(true);
+  expect(newState.cart[0].purchaseQuantity).toBe(3);
+  expect(newState.cart[1].purchaseQuantity).toBe(2);
+
+  expect(initialState.cartOpen).toBe(false);
+});
+
 test('UPDATE_PRODUCTS', () => {
   let newState = reducer(initialState, {
     type: UPDATE_PRODUCTS,
@@ -90,7 +106,7 @@ test('REMOVE_FROM_CART', () => {
 
   // cart is still open
   expect(newState1.cartOpen).toBe(true);
-
+  expect(initialState.cart[0]._id).toBe('1');
   // the second item should now be the first
   expect(newState1.cart.length).toBe(1);
   expect(newState1.cart[0]._id).toBe('2');
@@ -105,22 +121,6 @@ test('REMOVE_FROM_CART', () => {
   expect(newState2.cart.length).toBe(0);
 
   expect(initialState.cart.length).toBe(2);
-});
-
-test('UPDATE_CART_QUANTITY', () => {
-  let newState = reducer(initialState, {
-    type: UPDATE_CART_QUANTITY,
-    _id: '1',
-    purchaseQuantity: 3,
-  });
-  expect(newState.cartOpen).toBe(true);
-
-  expect(initialState.cart[0].purchaseQuantity).toBe(3);
-  
-  expect(newState.cart[0].purchaseQuantity).toBe(3);
-  expect(newState.cart[1].purchaseQuantity).toBe(2);
-
-  expect(initialState.cartOpen).toBe(false);
 });
 
 test('CLEAR_CART', () => {
