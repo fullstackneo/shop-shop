@@ -52,7 +52,7 @@ registerRoute(
   // Add in any other file extensions or routing criteria as needed.
   ({ url }) =>
     url.origin === self.location.origin &&
-    url.pathname.endsWith('.png' || 'jpg'), // Customize this strategy as needed, e.g., by changing to CacheFirst.
+    url.pathname.endsWith('.png' || '.jpg'), // Customize this strategy as needed, e.g., by changing to CacheFirst.
   new StaleWhileRevalidate({
     cacheName: 'images',
     plugins: [
