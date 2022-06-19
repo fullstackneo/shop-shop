@@ -21,7 +21,7 @@ const Cart = () => {
         res.redirectToCheckout({ sessionId: data.checkout.session });
       });
     }
-  }, [data]);
+  }, [data, stripePromise]);
 
   const [state, dispatch] = useStoreContext();
   function toggleCart() {
@@ -81,15 +81,6 @@ const Cart = () => {
           {state.cart.map(item => (
             <CartItem key={item._id} item={item} />
           ))}
-          <div className="flex-row space-between">
-            <strong>Total: ${calculateTotal()}</strong>
-            {Auth.loggedIn() ? (
-              <button>Checkout</button>
-            ) : (
-              <span>(log in to check out)</span>
-            )}
-          </div>
-
           <div className="flex-row space-between">
             <strong>Total: ${calculateTotal()}</strong>
             {Auth.loggedIn() ? (

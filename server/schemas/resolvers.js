@@ -8,6 +8,7 @@ const resolvers = {
     checkout: async (parent, args, context) => {
       // 解析referring url. This will give us the base domain that the request came from
       const url = new URL(context.headers.referer).origin;
+      console.log(url);
 
       // let order = await new Order({ products: args.products }).save();
       // order = await Order.find({ products: args.products }).populate(
