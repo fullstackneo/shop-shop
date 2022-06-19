@@ -51,7 +51,7 @@ registerRoute(
 
 const imageRoute = new Route(
   ({ request }) => {
-    return request.destination === 'images';
+    return request.destination === 'image';
   },
   new StaleWhileRevalidate({
     cacheName: 'images',
